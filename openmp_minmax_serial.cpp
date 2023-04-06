@@ -2,15 +2,14 @@
 #include <cstdlib>
 #include <iostream>
 using namespace std;
-#include <chrono>
+#include <omp.h>
 
 int main() {
-	const int row=500, col=400;
+	const int row = 500, col = 400;
 	int m[row][col];
 	int max_row[row];
 	int max_int = 0;
 	int min_int = RAND_MAX;
-	auto begin = std::chrono::steady_clock::now();
 	for (int i = 0; i < row; i++) {
 		for (int j = 0; j < col; j++) {
 			m[i][j] = rand();
@@ -18,6 +17,8 @@ int main() {
 		}
 		//cout << endl;
 	}
+
+	auto start = omp_get_wtime();
 	for (int i = 0; i < row; i++) {
 		for (int j = 0; j < col; j++) {
 			if (m[i][j] > max_int) max_int = m[i][j];
@@ -26,17 +27,10 @@ int main() {
 		if (max_int < min_int) {
 			min_int = max_int;
 		}
-		//cout << max_int << " ";
 		max_int = 0;
 	}
-	//for (int i = 0; i < row; i++) {
-		//if (max_row[i] < min_int) {
-			//min_int = max_row[i];
-		//}
-	//}
+	auto end = omp_get_wtime();
 	cout << min_int << "\n";
-	auto end = std::chrono::steady_clock::now();
-	auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
-	std::cout << "The time: " << elapsed_ms.count() << " ms\n";
+	std::cout << "The time: " << start-end << "\n";
 	return 0;
 }
