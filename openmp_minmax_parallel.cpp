@@ -22,7 +22,7 @@ int main() {
 	}
 
 	auto start = omp_get_wtime();
-	#pragma omp parallel shared(m, min_int) num_threads(16)
+	#pragma omp parallel shared(m, min_int) num_threads(16){
 	#pragma omp for ordered
 	for (int i = 0; i < row; i++) {
 			for (int j = 0; j < col; j++) {
@@ -33,7 +33,7 @@ int main() {
 				min_int = max_int;
 			}
 			max_int = 0;
-	}
+	}}
 	
 	auto end = omp_get_wtime();
 	cout <<"MINMAX: " << min_int << "\n";
