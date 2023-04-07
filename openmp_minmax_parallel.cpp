@@ -2,38 +2,41 @@
 #include <cstdlib>
 #include <iostream>
 using namespace std;
-#include <chrono>
 #include <omp.h>
 
 int main() {
-	const int row=500, col=400;
-	int m[row][col];
+	const int row = 500, col = 400;
+	int** m = new int* [row];
 	int max_row[row];
 	int max_int = 0;
 	int min_int = RAND_MAX;
-	auto begin = std::chrono::steady_clock::now();
+
+	cout << "matrix:\n";
 	for (int i = 0; i < row; i++) {
+		m[i] = new int[col];
 		for (int j = 0; j < col; j++) {
 			m[i][j] = rand();
+			//cout << m[i][j] << " ";
 		}
+		//cout << endl;
+	}
+
+	auto start = omp_get_wtime();
+	#pragma omp parallel shared(m, min_int) num_threads(16)
+	#pragma omp for ordered
+	for (int i = 0; i < row; i++) {
+			for (int j = 0; j < col; j++) {
+				if (m[i][j] > max_int) max_int = m[i][j];
+			}
+			max_row[i] = max_int;
+			if (max_int < min_int) {
+				min_int = max_int;
+			}
+			max_int = 0;
 	}
 	
-	#pragma omp parallel for num_threads(4) 
-	for (int i = 0; i < row; i++) {
-		for (int j = 0; j < col; j++) {
-			if (m[i][j] > max_int) max_int = m[i][j];
-		}
-		max_row[i] = max_int;
-		max_int = 0;
-	}
-	for (int i = 0; i < row; i++) {
-		if (max_row[i] < min_int) {
-			min_int = max_row[i];
-		}
-	}
-	auto end = std::chrono::steady_clock::now();
-	cout << min_int << "\n";
-	auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
-	std::cout << "The time: " << elapsed_ms.count() << " ms\n";
+	auto end = omp_get_wtime();
+	cout <<"MINMAX: " << min_int << "\n";
+	std::cout << "The time: " << end - start  << "\n";
 	return 0;
 }
