@@ -5,12 +5,15 @@ using namespace std;
 #include <omp.h>
 
 int main() {
-	const int row = 500, col = 400;
-	int m[row][col];
+	const int row = 5000, col = 4000;
+	int** m = new int* [row];
 	int max_row[row];
 	int max_int = 0;
 	int min_int = RAND_MAX;
+
+	cout << "matrix:\n";
 	for (int i = 0; i < row; i++) {
+		m[i] = new int[col];
 		for (int j = 0; j < col; j++) {
 			m[i][j] = rand();
 			//cout << m[i][j] << " ";
@@ -30,7 +33,7 @@ int main() {
 		max_int = 0;
 	}
 	auto end = omp_get_wtime();
-	cout << min_int << "\n";
-	std::cout << "The time: " << start-end << "\n";
+	cout <<"MINMAX: " << min_int << "\n";
+	std::cout << "The time: " << end - start  << "\n";
 	return 0;
 }
